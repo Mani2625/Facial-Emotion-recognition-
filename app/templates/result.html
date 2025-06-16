@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emotion Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 80px;
+            background-color: #e8f0fe;
+        }
+        h2 {
+            color: #444;
+        }
+        p {
+            font-size: 32px;
+            color: #0066cc;
+            font-weight: bold;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 6px;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Detected Emotion:</h2>
+    <p>{{ emotion }}</p>
+    <a href="/">Try another image</a>
+</body>
+</html>
