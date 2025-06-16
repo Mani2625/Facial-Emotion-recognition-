@@ -28,3 +28,16 @@ A real-time facial emotion detection web app using deep learning and computer vi
 ```bash
 git clone https://github.com/Mani2625/Facial-Emotion-Recognition-.git
 cd Facial-Emotion-Recognition-
+```
+###2. Install Requirements
+
+```bash
+pip install -r requirements.txt
+```
+###3. Run the App
+
+```bash
+python app/app.py
+```
+
+
