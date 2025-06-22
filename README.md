@@ -19,7 +19,6 @@ A real-time facial emotion detection web app using deep learning and computer vi
 - TensorFlow / Keras
 - Flask
 - HTML/CSS
-- Docker
 
 ## 📦 Installation
 
