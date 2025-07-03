@@ -8,8 +8,8 @@ from tensorflow.keras.optimizers import Adam
 import numpy as np
 
 # Paths
-train_path = r"C:\Users\manib\Downloads\emotion dataset\train"
-test_path = r"C:\Users\manib\Downloads\emotion dataset\test"
+train_path = r"Downloads\emotion dataset\train"
+test_path = r"Downloads\emotion dataset\test"
 img_height, img_width = 224, 224
 batch_size = 32
 num_classes = 7
