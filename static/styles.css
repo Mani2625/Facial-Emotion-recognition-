@@ -1,0 +1,114 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(120deg, #f8fafc 0%, #e3e9f7 100%);
+    margin: 0;
+    min-height: 100vh;
+    color: #22223b;
+}
+
+.container {
+    background: #fff;
+    max-width: 420px;
+    margin: 60px auto 0 auto;
+    padding: 36px 32px 32px 32px;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(60, 60, 120, 0.12);
+    text-align: center;
+    animation: fadeIn 0.8s cubic-bezier(.4,0,.2,1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h2, h3 {
+    color: #22223b;
+    margin-bottom: 18px;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+p, label {
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 18px;
+}
+
+form {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+input[type="file"] {
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #bfc0c0;
+    background: #f7f7f7;
+    margin-bottom: 18px;
+    width: 90%;
+    max-width: 320px;
+}
+
+input[type="submit"], .btn, a.button {
+    margin-top: 18px;
+    font-size: 17px;
+    padding: 10px 28px;
+    background: linear-gradient(90deg, #007BFF 0%, #0056b3 100%);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.2s, box-shadow 0.2s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.08);
+    outline: none;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    min-width: 180px;
+}
+
+input[type="submit"]:hover, .btn:hover, a.button:hover {
+    background: linear-gradient(90deg, #0056b3 0%, #007BFF 100%);
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.16);
+    transform: translateY(-2px) scale(1.03);
+}
+
+/* Flex row for button group on homepage */
+.button-row {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.emotion-result {
+    margin-top: 24px;
+    font-size: 22px;
+    color: #28a745;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 0 #eafbe7;
+}
+
+.back-link {
+    margin-top: 30px;
+    display: block;
+    color: #007BFF;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.back-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
