@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 40px;
+        }
+        input[type="file"] {
+            font-size: 16px;
+            padding: 8px;
+        }
+        input[type="submit"], a button {
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 8px 16px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover, a button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload an Image for Emotion Recognition</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required><br><br>
+        <input type="submit" value="Detect Emotion">
+    </form>
+
+    {% if emotion %}
+        <h3 style="color:green;">Predicted Emotion: {{ emotion }}</h3>
+    {% endif %}
+
+    <br><a href="/"><button>Back to Home</button></a>
+</body>
+</html>

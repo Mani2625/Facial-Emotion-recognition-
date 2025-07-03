@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Real-Time Emotion Detection</title>
+    <title>Emotion Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        h2 {
+            font-size: 28px;
+            color: #333;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
-<body style="text-align:center;">
-    <h1>Live Emotion Detection</h1>
-    <img src="{{ url_for('video') }}" width="720" />
+<body>
+    <h2>Select Emotion Detection Mode</h2>
+    <a href="/video"><button>Live Webcam Detection</button></a>
+    <a href="/upload"><button>Upload Image</button></a>
 </body>
 </html>
