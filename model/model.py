@@ -1,94 +1,130 @@
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import (Input, Conv2D, MaxPooling2D, Flatten, Dense,Dropout, BatchNormalization)
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications.efficientnet import EfficientNetB0, preprocess_input
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+from tensorflow.keras.optimizers import Adam
+import numpy as np
 
-# Path to dataset
-dataset_path = r"C:\Users\manib\OneDrive\Desktop\Projects\dataset"
-
-# Image parameters
-img_height, img_width = 48, 48
+# Paths
+train_path = r"Downloads\emotion dataset\train"
+test_path = r"Downloads\emotion dataset\test"
+img_height, img_width = 224, 224
 batch_size = 32
-num_classes = 6  # Ahegao, Angry, Happy, Neutral, Sad, Surprise
+num_classes = 7
 
-# Data augmentation
-datagen = ImageDataGenerator(
-    rescale=1./255,
+# Data generators
+
+# Improved data augmentation
+train_datagen = ImageDataGenerator(
+    preprocessing_function=preprocess_input,
     validation_split=0.2,
-    rotation_range=15,
-    zoom_range=0.2,
-    width_shift_range=0.1,
-    height_shift_range=0.1,
-    shear_range=0.1,
+    rotation_range=40,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.3,
     horizontal_flip=True,
-    fill_mode="nearest"
+    brightness_range=[0.7, 1.3],
+    fill_mode='nearest'
 )
 
-train_generator = datagen.flow_from_directory(
-    dataset_path,
+test_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
+
+train_generator = train_datagen.flow_from_directory(
+    train_path,
     target_size=(img_height, img_width),
-    color_mode='grayscale',
     batch_size=batch_size,
     class_mode='categorical',
     subset='training'
 )
 
-val_generator = datagen.flow_from_directory(
-    dataset_path,
+val_generator = train_datagen.flow_from_directory(
+    train_path,
     target_size=(img_height, img_width),
-    color_mode='grayscale',
     batch_size=batch_size,
     class_mode='categorical',
     subset='validation'
 )
 
-# Improved CNN model
-model = Sequential([
-    Input(shape=(img_height, img_width, 1)),
+test_generator = test_datagen.flow_from_directory(
+    test_path,
+    target_size=(img_height, img_width),
+    batch_size=batch_size,
+    class_mode='categorical',
+    shuffle=False
+)
 
-    Conv2D(64, (3, 3), activation='relu', padding='same'),
-    BatchNormalization(),
-    MaxPooling2D(2, 2),
-    Dropout(0.25),
 
-    Conv2D(128, (3, 3), activation='relu', padding='same'),
-    BatchNormalization(),
-    MaxPooling2D(2, 2),
-    Dropout(0.25),
+# Load EfficientNetB0
+base_model = EfficientNetB0(include_top=False, input_shape=(img_height, img_width, 3), weights='imagenet')
+base_model.trainable = False  # freeze initially
 
-    Conv2D(256, (3, 3), activation='relu', padding='same'),
-    BatchNormalization(),
-    MaxPooling2D(2, 2),
-    Dropout(0.25),
+# Improved head
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dropout(0.5)(x)
+x = Dense(256, activation='relu')(x)
+x = Dropout(0.4)(x)
+x = Dense(128, activation='relu')(x)
+x = Dropout(0.3)(x)
+predictions = Dense(num_classes, activation='softmax')(x)
 
-    Flatten(),
-    Dense(512, activation='relu'),
-    Dropout(0.5),
-    Dense(num_classes, activation='softmax')
-])
+model = Model(inputs=base_model.input, outputs=predictions)
 
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# Use AdamW optimizer for better generalization
+try:
+    from tensorflow.keras.optimizers import AdamW
+    optimizer = AdamW(learning_rate=1e-4)
+except ImportError:
+    optimizer = Adam(1e-4)
 
-# Model summary (optional for debugging)
+model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 model.summary()
 
-# Callbacks (optional: EarlyStopping, ReduceLROnPlateau)
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
+# Callbacks
 callbacks = [
-    EarlyStopping(patience=10, restore_best_weights=True),
-    ReduceLROnPlateau(factor=0.5, patience=5, verbose=1),
-    ModelCheckpoint("model/emotion_model.keras", save_best_only=True)
+    EarlyStopping(patience=8, restore_best_weights=True, monitor='val_loss'),
+    ReduceLROnPlateau(patience=4, factor=0.3, verbose=1, min_lr=1e-6),
+    ModelCheckpoint("model/emotion_model_efficientnet.keras", save_best_only=True, monitor='val_accuracy', mode='max')
 ]
 
-# Train the model
+
+# Train
 model.fit(
     train_generator,
     validation_data=val_generator,
-    epochs=20,  # more epochs to learn better
+    epochs=25,
     callbacks=callbacks
 )
 
-# Save final model (backup)
+
+# Fine-tune EfficientNetB0 (unfreeze top 60 layers)
+base_model.trainable = True
+for layer in base_model.layers[:-60]:
+    layer.trainable = False
+
+# Use lower learning rate for fine-tuning
+try:
+    optimizer_finetune = AdamW(learning_rate=5e-6)
+except:
+    optimizer_finetune = Adam(5e-6)
+
+model.compile(optimizer=optimizer_finetune, loss='categorical_crossentropy', metrics=['accuracy'])
+
+model.fit(
+    train_generator,
+    validation_data=val_generator,
+    epochs=10,
+    callbacks=callbacks
+)
+
+# Evaluate on test set
+test_loss, test_acc = model.evaluate(test_generator)
+print(f"\n✅ Final Test Accuracy: {test_acc:.4f} | Test Loss: {test_loss:.4f}")
+
+# Save final model
 os.makedirs("model", exist_ok=True)
-model.save("model/emotion_model_final.keras")
+model.save("model/emotion_model_efficientnet.keras")

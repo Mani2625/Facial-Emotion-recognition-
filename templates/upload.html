@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Upload an Image for Emotion Recognition</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required><br>
+            <input type="submit" value="Detect Emotion">
+        </form>
+
+        {% if emotion %}
+            <div class="emotion-result">Predicted Emotion: {{ emotion }}</div>
+        {% endif %}
+
+        <a href="/" class="back-link">&#8592; Back to Home</a>
+    </div>
+</body>
+</html>
